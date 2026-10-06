@@ -1,0 +1,102 @@
+[package]
+edition = { workspace = true }
+name = "rmpx"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+categories = ["encoding", "no-std"]
+description = "Pure Rust MessagePack: serde support, a dynamic Value type and a low-level no_std API in one crate"
+documentation = "https://docs.rs/rmpx"
+keywords = ["msgpack", "MessagePack", "serde", "serialization"]
+readme = "../../README.md"
+repository.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["std", "serde", "value"]
+# std::io readers and writers; without it only the low-level `raw` API is available, on byte slices
+std = ["num-traits/std"]
+# `to_vec` / `from_slice`, `Serializer` / `Deserializer`; with `value`, also serde support for `Value`
+serde = ["std", "dep:serde", "dep:serde_bytes"]
+# the dynamic `Value` / `ValueRef` types and their readers and writers
+value = ["std"]
+
+[dependencies]
+num-traits = { workspace = true }
+serde = { workspace = true, optional = true }
+serde_bytes = { workspace = true, optional = true }
+
+[dev-dependencies]
+quickcheck = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_bytes = { workspace = true }
+
+[[test]]
+name = "raw"
+required-features = ["std"]
+
+[[test]]
+name = "serde_decode"
+required-features = ["serde"]
+
+[[test]]
+name = "serde_decode_derive"
+required-features = ["serde"]
+
+[[test]]
+name = "serde_encode"
+required-features = ["serde"]
+
+[[test]]
+name = "serde_encode_derive"
+required-features = ["serde", "value"]
+
+[[test]]
+name = "serde_round"
+required-features = ["serde"]
+
+[[test]]
+name = "value_decode"
+required-features = ["value"]
+
+[[test]]
+name = "value_decode_ref"
+required-features = ["value"]
+
+[[test]]
+name = "value_encode_ref"
+required-features = ["value"]
+
+[[test]]
+name = "value_mirror"
+required-features = ["value"]
+
+[[test]]
+name = "value_types"
+required-features = ["value"]
+
+[[test]]
+name = "value_serde_decode"
+required-features = ["serde", "value"]
+
+[[test]]
+name = "value_serde_de_ref"
+required-features = ["serde", "value"]
+
+[[test]]
+name = "value_serde_encode"
+required-features = ["serde", "value"]
+
+[[test]]
+name = "value_serde_prealloc"
+required-features = ["serde", "value"]
+
+[[test]]
+name = "value_serde_round"
+required-features = ["serde", "value"]
+
+[lints]
+workspace = true

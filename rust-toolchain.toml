@@ -1,0 +1,5 @@
+[toolchain]
+# The library builds on stable (MSRV in Cargo.toml, checked by `just msrv`); only `just bench-wasm` needs nightly, it
+# asks for it itself.
+channel = "stable"
+components = ["rustfmt", "clippy"]

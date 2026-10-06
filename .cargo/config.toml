@@ -1,0 +1,8 @@
+# Wasm benches, see `just bench-wasm`. MVP features only, like a module built for the widest range of browsers.
+[target.wasm32-wasip1]
+# Benches run from their package dir, so the script's path comes through [env], resolved against this repo.
+runner = ["sh", "-c", 'exec node --no-warnings "$RMPX_WASI_RUNNER" "$@"', "wasi-run"]
+rustflags = ["-C", "target-cpu=mvp", "-C", "target-feature=-mutable-globals,-sign-ext,-multivalue,-simd128"]
+
+[env]
+RMPX_WASI_RUNNER = { value = "scripts/wasi-run.mjs", relative = true }

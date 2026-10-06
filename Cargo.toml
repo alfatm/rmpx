@@ -1,7 +1,63 @@
 [workspace]
-members = [
-    "rmp",
-    "rmp-serde",
-    "rmpv",
-    "rmpv-tests"
-]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+version = "1.0.0"
+authors = ["Evgeny Safronov <division494@gmail.com>", "Andrew Panin <alfatm@gmail.com>"]
+license = "MIT"
+rust-version = "1.88"
+repository = "https://github.com/alfatm/rmpx"
+
+[workspace.lints.rust]
+double_negations = "deny"
+missing_debug_implementations = "warn"
+# the library itself forbids it outright (`#![forbid(unsafe_code)]` in its lib.rs), test helpers like a counting global
+# allocator opt out explicitly
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+enum_glob_use = "deny"
+perf = { level = "deny", priority = -1 }
+unused_async = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unreachable = "deny"
+todo = "deny"
+unimplemented = "deny"
+indexing_slicing = "deny"
+# no panics in library code: besides the explicit ones above, also asserts, overflow (a panic in debug builds), string
+# slicing at a non-char boundary and panics hidden behind `Result`
+arithmetic_side_effects = "deny"
+panic_in_result_fn = "deny"
+string_slice = "deny"
+get_unwrap = "deny"
+unwrap_in_result = "deny"
+missing_panics_doc = "deny"
+exit = "deny"
+cast_lossless = "allow"
+
+[workspace.dependencies]
+criterion = { version = "0.8", default-features = false, features = ["cargo_bench_support"] }
+dlmalloc = { version = "0.2.10" }
+num-traits = { version = "0.2.19", default-features = false }
+quickcheck = { version = "1.1" }
+rmpx = { path = "./crates/rmpx", version = "1.0.0" }
+serde = { version = "1.0.229" }
+serde_bytes = { version = "0.11.19" }
+
+# Only builds of this workspace use it, dependents apply their own profiles. Thin LTO is a common release profile for
+# servers, so benches see the same inlining as production (without LTO, codegen unit partitioning skews them by up to
+# 20%).
+[profile.release]
+lto = "thin"
+
+# Wasm benches (`just bench-wasm`): a size-optimized release build, the usual profile of a wasm module shipped to
+# browsers.
+[profile.wasm]
+inherits = "release"
+opt-level = "s"
+lto = "fat"
+codegen-units = 1

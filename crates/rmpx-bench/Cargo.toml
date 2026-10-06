@@ -1,0 +1,36 @@
+[package]
+edition = { workspace = true }
+name = "rmpx-bench"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+
+# Only the criterion benches below, the empty lib would get criterion's arguments under libtest.
+[lib]
+bench = false
+
+[dev-dependencies]
+criterion = { workspace = true }
+rmpx = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_bytes = { workspace = true }
+
+# Rayon speeds up criterion's statistics, but it does not build for wasm.
+[target.'cfg(not(target_family = "wasm"))'.dev-dependencies]
+criterion = { workspace = true, features = ["rayon"] }
+
+# The allocator std uses on wasm32-unknown-unknown, instead of wasi-libc's: see `scripts/wasi-run.mjs`.
+[target.'cfg(target_family = "wasm")'.dev-dependencies]
+dlmalloc = { workspace = true, features = ["global"] }
+
+[[bench]]
+name = "codec"
+harness = false
+
+[[bench]]
+name = "websocket"
+harness = false
+
+[lints]
+workspace = true
